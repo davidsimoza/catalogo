@@ -10,14 +10,13 @@
     h2 { text-align: center; color: #333; margin-top: 0; }
     input, textarea, button { width: 100%; padding: 10px; margin-top: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
     button { background-color: #007bff; color: white; font-weight: bold; border: none; cursor: pointer; }
-    button:hover { background-color: #0056b3; }
   </style>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Pega aquí exactamente las mismas credenciales de Firebase del Paso 1
+    // Pega aquí tus credenciales de Firebase
     const firebaseConfig = {
       apiKey: "TU_API_KEY",
       authDomain: "TU_PROYECTO.firebaseapp.com",
@@ -30,29 +29,35 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    document.getElementById("formPerfume").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      
-      const btn = document.getElementById("btnGuardar");
-      btn.innerText = "Guardando...";
-      btn.disabled = true;
+    window.addEventListener('DOMContentLoaded', () => {
+      const formulario = document.getElementById("formPerfume");
 
-      try {
-        await addDoc(collection(db, "perfumes"), {
-          nombre: document.getElementById("nombre").value,
-          precio: document.getElementById("precio").value,
-          imagen: document.getElementById("imagen").value,
-          descripcion: document.getElementById("descripcion").value
-        });
+      formulario.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        console.log("Intentando guardar perfume..."); // Esto se mostrará en la consola si el botón responde
 
-        alert("¡Perfume agregado con éxito!");
-        document.getElementById("formPerfume").reset();
-      } catch (error) {
-        alert("Error al guardar: " + error.message);
-      } finally {
-        btn.innerText = "Guardar Perfume";
-        btn.disabled = false;
-      }
+        const btn = document.getElementById("btnGuardar");
+        btn.innerText = "Guardando...";
+        btn.disabled = true;
+
+        try {
+          await addDoc(collection(db, "perfumes"), {
+            nombre: document.getElementById("nombre").value,
+            precio: document.getElementById("precio").value,
+            imagen: document.getElementById("imagen").value,
+            descripcion: document.getElementById("descripcion").value
+          });
+
+          alert("¡Perfume agregado con éxito!");
+          formulario.reset();
+        } catch (error) {
+          console.error("Error detectado:", error);
+          alert("Error al guardar: " + error.message);
+        } finally {
+          btn.innerText = "Guardar Perfume";
+          btn.disabled = false;
+        }
+      });
     });
   </script>
 </head>
@@ -70,7 +75,7 @@
       <input type="url" id="imagen" placeholder="https://sitio.com/foto.jpg" required>
       
       <label>Notas / Descripción:</label>
-      <textarea id="descripcion" rows="3" placeholder="Ej: Notas florales, jazmín y rosa..." required></textarea>
+      <textarea id="descripcion" rows="3" placeholder="Ej: Notas florales..." required></textarea>
       
       <button type="submit" id="btnGuardar">Guardar Perfume</button>
     </form>
