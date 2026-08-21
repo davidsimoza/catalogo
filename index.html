@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catálogo de Perfumes</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f8f9fa; margin: 0; padding: 20px; }
+    h1 { text-align: center; color: #222; margin-bottom: 20px; }
+    .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+    .card { background: white; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); width: 240px; padding: 15px; text-align: center; }
+    .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
+    .title { font-size: 1.1em; font-weight: bold; margin: 10px 0 5px; color: #333; }
+    .price { color: #2b8a3e; font-size: 1.2em; font-weight: bold; margin-bottom: 8px; }
+    .desc { font-size: 0.9em; color: #666; margin-bottom: 15px; }
+    .btn { display: inline-block; background-color: #25d366; color: white; text-decoration: none; padding: 10px 15px; border-radius: 5px; font-weight: bold; font-size: 0.9em; }
+  </style>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    / Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDfOh0uYBg0vPCng0hz9_gwspnLX6MpdME",
+  authDomain: "catalogo-ba64b.firebaseapp.com",
+  projectId: "catalogo-ba64b",
+  storageBucket: "catalogo-ba64b.firebasestorage.app",
+  messagingSenderId: "375871709447",
+  appId: "1:375871709447:web:537739fbf49ec5c91765a2"
+};
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function cargarProductos() {
+      const contenedor = document.getElementById("catalogo");
+      contenedor.innerHTML = "";
+      const querySnapshot = await getDocs(collection(db, "perfumes"));
+
+      if (querySnapshot.empty) {
+        contenedor.innerHTML = "<p>No hay perfumes registrados aún.</p>";
+        return;
+      }
+
+      querySnapshot.forEach((doc) => {
+        const p = doc.data();
+        
+        const linkWhatsApp = `https://wa.me/5804122090654?text=Hola,%20quiero%20comprar%20el%20perfume%20${encodeURIComponent(p.nombre)}`;
+
+        contenedor.innerHTML += `
+          <div class="card">
+            <img src="${p.imagen}" alt="${p.nombre}">
+            <div class="title">${p.nombre}</div>
+            <div class="price">$${p.precio}</div>
+            <div class="desc">${p.descripcion}</div>
+            <a class="btn" href="${linkWhatsApp}" target="_blank">Pedir por WhatsApp</a>
+          </div>
+        `;
+      });
+    }
+
+    cargarProductos();
+  </script>
+</head>
+<body>
+  <h1>Catálogo de Perfumes</h1>
+  <div id="catalogo" class="grid">
+    <p>Cargando catálogo...</p>
+  </div>
+</body>
+</html>
